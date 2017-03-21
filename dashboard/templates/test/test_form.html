@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>test_form</title>
+</head>
+<body>
+<form action="#" method="test">
+	<ul>
+		<li>
+			<input type="text" name="username">
+		</li>
+		<li>
+			<input type="checkbox" name="fav" value="1">linux
+		</li>
+		<li>
+			<input type="checkbox" name="fav" value="2">python
+		</li>
+		<li>
+			<input type="checkbox" name="fav" value="3">golang		
+		</li>	
+		<li>
+			<input type="submit" value="提交">
+		</li>	
+	</ul>
+</form>
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.0/jquery.min.js"></script>
+<script type="text/javascript">
+	$.ajax({
+		url: '#',
+		data: {'username': 'rock','fav':["1","2"]},
+		type:"test"
+	})
+	
+</script>
+</body>
+</html>
