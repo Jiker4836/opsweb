@@ -1,0 +1,33 @@
+{% extends "public/layout.html" %}
+
+{% block body %}
+<table class="table table-striped">
+<caption><a href="{% url 'idc_add' %}" type="button" class="btn btn-primary">添加</a></caption>
+        <thead>
+            <tr>
+                <td>#</td>
+                <td>字母简写</td>
+                <td>中文名</td>
+                <td>地址</td>
+                <td>机房联系人</td>
+                <td>机房联系人电话</td>
+                <td>联系人邮箱</td>
+                <td>操作</td>
+            </tr>
+        </thead>
+        <tbody>
+               {% for idc in object_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ idc.name }}</td>
+                        <td>{{ idc.idc_name }}</td>
+                        <td>{{ idc.address }}</td>
+                        <td>{{ idc.user }}</td>
+                         <td>{{ idc.user_phone }}</td>
+                        <td>{{ idc.user_email }}</td>
+                       <td><button>编辑</button></td>   
+                        </tr>    
+                {% endfor %}    
+        </tbody>     
+    </table> 
+{% endblock %}

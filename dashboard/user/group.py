@@ -70,14 +70,15 @@ class UserGroupView(View):
 	'''
 	将用户添加到指定组
 	'''
-	@method_decorator(login_required)
-    	@method_decorator(permission_required("auth.add_group", login_url=settings.PERMISSION_NONE_URL))
+	# @method_decorator(login_required)
+    	# @method_decorator(permission_required("auth.add_group", login_url=settings.PERMISSION_NONE_URL))
 	def post(self,request):
 		ret={"status":0}
 		uid=request.POST.get('uid',None)
 		gid=request.POST.get('gid',None)
 		try:
 			user=User.objects.get(pk=uid)
+			group=Group.objects.get(pk=gid)
 		except User.DoesNotExist:		
 			logger.error("将用户添加至指定用户组，用户不存在，用户id为：{}".format(uid))
 			ret["status"]=1

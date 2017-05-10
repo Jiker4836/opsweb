@@ -1,0 +1,101 @@
+{% extends "public/layout.html" %}
+
+{% block body %}
+    <form class="form-inline" action="" method="get">
+        <div class="form-group">
+            <input type="text" name="hostname" value="{{ hostname }}" class="form-control" placeholder="搜索主机名">
+        </div>
+        <div class="form-group">
+            <input type="text" name="inner_ip" value="{{ inner_ip }}" class="form-control" placeholder="搜索ip">
+        </div>
+        <button type="submit" class="btn btn-primary">查询</button>
+    </form>
+
+    <table class="table table-striped">
+{#    <a id="server_add" href="{% url 'server_add' %}" class="btn btn-primary" type="button">添加服务器</a>#}
+        <tr>
+{#            <th>供应厂商</th>#}
+{#            <th>制造商</th>#}
+{#            <th>制造日期</th>#}
+{#            <th>服务器类型</th>#}
+{#            <th>SN号</th>#}
+{#            <th>系统</th>#}
+            <th>#</th>
+            <th>主机名</th>
+            <th>内网IP</th>
+            <th>MAC地址</th>
+            <th>ip信息</th>
+            <th>cpu</th>
+            <th>硬盘</th>
+            <th>内存</th>
+{#            <th>服务器状态</th>#}
+{#            <th>remark</th>#}
+{#            <th>检查更新时间</th>#}
+            <th>状态</th>
+{#            <th>uuid</th>#}
+            <th>操作</th>
+        </tr>
+        {% for server in object_list %}
+        <tr>
+{#            <td>{{ server.supplier }}</td>#}
+{#            <td>{{ server.manufacturers }}</td>#}
+{#            <td>{{ server.manufacture_date }}</td>#}
+{#            <td>{{ server.server_type }}</td>#}
+{#            <td>{{ server.sn }}</td>#}
+{#            <td>{{ server.os }}</td>#}
+            <td>{{ forloop.counter }}</td>
+            <td>{{ server.hostname }}</td>
+            <td>{{ server.inner_ip }}</td>
+            <td>{{ server.mac_address }}</td>
+            <td>{{ server.ip_info }}</td>
+            <td>{{ server.server_cpu }}</td>
+            <td>{{ server.server_disk }}</td>
+            <td>{{ server.server_mem }}</td>
+            <td>{{ server.status }}</td>
+{#            <td>{{ server.remark }}</td>#}
+{#            <td>{{ server.check_update_time }}</td>#}
+{#            <td>{{ server.vm_status }}</td>#}
+{#            <td>{{ server.uuid }}</td>#}
+              <td>
+                <div class="btn-group">
+                    <div class="btn-group">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="false">
+                            修改
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                             <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'modify_server_status' %}?server_id={{ server.id }}&next={{ request.get_full_path|urlencode }}">服务器状态</a></li>>
+                        </ul>
+                    </div>
+                    {% if user.is_active %}
+                        <button type="button" class="btn btn-sm btn-warning modify_user_status" status="true" data="{{ user.id }}">禁用</button>
+                    {% else %}
+                        <button type="button" class="btn btn-sm modify_user_status btn-info" status="false" data="{{ user.id }}">开启</button>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="panel-default">
+        <center>
+            <ul class="pagination">
+                <li><a href="{% url 'server_list' %}?hostname={{ hostname }}&inner_ip={{ inner_ip }}&page=1">首页</a> </li>
+                    {% if page_obj.has_previous %}
+                        <li><a href="{% url 'server_list' %}?hostname={{ hostname }}&inner_ip={{ inner_ip }}&page={{ page_obj.previous_page_number }}">上一页</a></li>
+                    {% endif %}
+
+                    {# {% for p in page_obj.paginator.page_range %} #}
+                    {% for p in page_range %}
+                        <li {% if p == page_obj.number %} class="active" {% endif %}><a href="{% url 'server_list' %}?page={{ p }}">{{ p }}</a></li>
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li><a href="{% url 'server_list' %}?hostname={{ hostname }}&inner_ip={{ inner_ip }}&page={{ page_obj.next_page_number }}">下一页</a> </li>
+                    {% endif %}
+                <li><a href="{% url 'server_list' %}?hostname={{ hostname }}&inner_ip={{ inner_ip }}&page={{ page_obj.paginator.num_pages }}">末页</a> </li>
+            </ul>
+        </center>
+    </div>
+{% endblock %}

@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.generic import View,TemplateView, ListView, RedirectView, FormView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, permission_required
+import datetime,time
 
 import logging
 logger=logging.getLogger('opsweb')
@@ -13,7 +14,6 @@ logger=logging.getLogger('opsweb')
 class IndexView(View):
 	@method_decorator(login_required)
 	def get(self,request):
-		logger.debug("debug debgu")
 		return render(request,"public/index.html")
 
 class LoginView(View):
@@ -28,7 +28,14 @@ class LoginView(View):
 		if user is not None:
 			if user.is_active:
 				login(request,user)
-				ret["next_url"]='/'
+				# request.session.set_expiry(30)#设置30秒后过期
+				#设置session登陆后第二天2点过期，django会同时设置cookie过期
+				nowtime=time.time()
+				tomorrow=datetime.date.today()+datetime.timedelta(days=1)
+				tomorrowtime='%s 02:00:00' %(tomorrow)
+				timestamp=time.mktime(time.strptime(tomorrowtime,'%Y-%m-%d %H:%M:%S'))
+				request.session.set_expiry(timestamp-nowtime)
+				ret["next_url"]=request.GET.get('next') if  request.GET.get('next',None) else '/'
 			else:
 				ret["status"]=1
 				ret["errmsg"]="用户被禁止"

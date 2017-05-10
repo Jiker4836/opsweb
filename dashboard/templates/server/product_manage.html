@@ -1,0 +1,30 @@
+{% extends "public/layout.html" %}
+{% block body %}
+<table class="table table-striped">
+<caption><a href="{% url 'product_add' %}" type="button" class="btn btn-primary">添加</a></caption>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>业务线名称</th>
+                <th>上级业务线</th>
+                <th>业务线字母简称</th>
+                <th>运维负责人</th>
+                <th>开发负责人</th>
+                <th>操作</th>
+                </tr>
+        </thead>
+        <tbody>
+                {% for server in object_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ server.name }}</td>
+                        <td>{{ server.module_letter }}</td>
+                        <td>{{ server.p_product }}</td>
+                        <td>{{ server.op_interface }}</td>
+                        <td>{{ server.dev_interface }}</td>
+                       <td><button class="btn btn-info">编辑</button></td>   
+                    </tr>    
+                {% endfor %}    
+        </tbody>     
+    </table> 
+{% endblock %}

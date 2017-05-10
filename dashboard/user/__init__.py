@@ -34,7 +34,6 @@ class UserListView(ListView):
 		return context
 
 	def get_page_range(self,page_obj):
-
 		start_index=page_obj.number-self.before_index
 		if start_index<0:
 			start_index=0

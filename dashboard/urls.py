@@ -3,6 +3,7 @@ from django.conf.urls import include, url
 from . import views
 from dashboard import user
 from dashboard.user import group
+from dashboard.server import idc,server,product
 
 urlpatterns = [
     url(r'^login/$', views.LoginView.as_view()),
@@ -20,11 +21,26 @@ urlpatterns = [
     	])),
 
     url(r'^group/', include([
-            url(r'^l$',group.GroupView.as_view()),
+            url(r'^$',group.GroupView.as_view()),
             url(r'^list/$',group.GroupListView.as_view()),
             url(r'^usergroup/$',group.UserGroupView.as_view()),
             url(r'^permission/$',group.GroupPermissionListView.as_view()),
             url(r'^permissions/$',group.GroupPermissionView.as_view()),
             url(r'^userpermission/$',group.UserGroupPermissionListView.as_view()),
     	])),
+
+    url(r'^server/',include([
+            url(r'^idc/',include([
+                    url(r'add/$',idc.AddIdcView.as_view(),name='idc_add'),
+                    url(r'list/$',idc.IdcListView.as_view(),name='idc_list'),
+                ])),
+            url(r'report/$',server.ServerInfoAutoReport.as_view()),
+            url(r'^list/$',server.ServerListView.as_view(),name="server_list"),
+            url(r'^status/$',server.ModifyServerStatusView.as_view(),name="modify_server_status"),
+        ])),
+
+    url(r'^product/', include([
+            url(r'^manage/$',product.ProductMangeView.as_view(),name="product_manage"),
+            url(r'^add/$',product.ProductAddView.as_view(),name="product_add"),
+        ])),    
  ]

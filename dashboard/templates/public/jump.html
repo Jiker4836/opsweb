@@ -12,7 +12,7 @@
 {% block js %}
     <script>
     	var status="{{ status }}"
-    	var next_url="{{ next_url }}";
+    	var next_url="{{ next_url |safe }}";
     	var timejump=1500;
     	$(function(){
     		if(status != 0){

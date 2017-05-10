@@ -1,0 +1,1 @@
+2017-04-23 15:13:01,377 - /data/reboot/opsweb/dashboard/server/idc.py:36[ERROR] - 用户reboot 添加IDC出错: (1062, "Duplicate entry 'jxq' for key 'name'")
