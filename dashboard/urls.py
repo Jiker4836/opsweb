@@ -4,6 +4,8 @@ from . import views
 from dashboard import user
 from dashboard.user import group
 from dashboard.server import idc,server,product
+from dashboard.monitor import zabbix
+
 
 urlpatterns = [
     url(r'^login/$', views.LoginView.as_view()),
@@ -34,13 +36,25 @@ urlpatterns = [
                     url(r'add/$',idc.AddIdcView.as_view(),name='idc_add'),
                     url(r'list/$',idc.IdcListView.as_view(),name='idc_list'),
                 ])),
+
+                url(r'^product/', include([
+                        url(r'^manage',include([
+                            url(r'^/$',product.ProductMangeView.as_view(),name="product_manage"),
+                            url(r'/add/$',product.ProductAddView.as_view(),name="product_add"),
+                            url(r'/get/$',product.ProductMangeGetView.as_view(),name="product_manage_get"),
+                            ])),
+                    ])),
+
             url(r'report/$',server.ServerInfoAutoReport.as_view()),
             url(r'^list/$',server.ServerListView.as_view(),name="server_list"),
             url(r'^status/$',server.ModifyServerStatusView.as_view(),name="modify_server_status"),
         ])),
 
-    url(r'^product/', include([
-            url(r'^manage/$',product.ProductMangeView.as_view(),name="product_manage"),
-            url(r'^add/$',product.ProductAddView.as_view(),name="product_add"),
-        ])),    
+    url(r'^monitor/',include([
+                url(r'^zabbix/', include([
+                    # url(r'hostrsync/$',server.MonitorZabbixHostrsync.as_view(),name='monitory_zabbix_hostrsync'),
+                    url(r'hostrsync/$',zabbix.HostRsyncView.as_view(),name='monitory_zabbix_hostrsync'),
+                    ])),
+        ])),
+   
  ]

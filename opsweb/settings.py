@@ -122,6 +122,9 @@ STATICFILES_DIRS = (
 TEMPLATE_JUMP="public/jump.html"
 # 无权限显示页面 跳转
 PERMISSION_NONE_URL = '/permission/none/'
+ZABBIX_USER='Admin'
+ZABBIX_PASS='NvbzyaMXTvKq$4MU'
+ZABBIX_URL='http://59.110.12.72:8000/zabbix'
 
 
 LOGGING = {
@@ -131,12 +134,12 @@ LOGGING = {
         "opsweb": {
             "level": "DEBUG",
             "handlers": ["console_handle", "opsweb_file_handle"],
+            # "handlers": ["console_handle", "opsweb_file_handle",'mail'],
         },
         "django":{
             "level": "DEBUG",
             "handlers": [ "django_handle"],
         },
-
     },
     "handlers":{
         "console_handle": {
@@ -148,6 +151,16 @@ LOGGING = {
             "filename": os.path.join(BASE_DIR, "logs", "opsweb.log"),
             "formatter": "opsweb"
         },
+        # "mail":{
+        #   "class":'logging.handlers.SMTPHandler',
+        #   'level':'DEBUG',
+        #   'formatter':'opsweb',
+        #   'mailhost':('smtp.126.com',25),
+        #   'fromaddr':'longpengcheng2006@126.com',
+        #   'toaddrs':['Jiker4836@163.com'],
+        #   'subject':'lpc devops mail',
+        #   'credentials':('longpengcheng2006','password'),
+        # },
         "django_handle":{
             "class": "logging.FileHandler",
             "filename": os.path.join(BASE_DIR, "logs", "django.log"),

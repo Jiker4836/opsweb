@@ -23,6 +23,9 @@
                 <select class="chosen-select  form-control" data-placeholder=""  name="p_product"
                         parsley-required="true" parsley-error-container="#p_product_div">
                     <option value="0">顶级业务线</option>
+                    {% for product in p_products %}
+                        <option value="{{ product.id }}">{{ product.name }}</option>
+                    {% endfor %}
                 </select>
             </div>
         </div>

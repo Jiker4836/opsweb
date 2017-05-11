@@ -10,7 +10,9 @@ from dashboard.forms import IdcForm
 from dashboard.models import Idc,Server,Status
 from django.core.urlresolvers import reverse
 from django.conf import settings
-import datetime
+import datetime,json
+from zabbix_client import ZabbixServerProxy
+from dashboard.server import product
 
 import logging
 logger=logging.getLogger('opsweb')
@@ -99,3 +101,24 @@ class ModifyServerStatusView(TemplateView):
 			ret["errmsg"]=e.args
 		print ret
 		return 	render(request,settings.TEMPLATE_JUMP,ret)	
+
+
+# class MonitorZabbixHostrsync(TemplateView):
+# 	template_name="monitor/zabbix/host_rsync.html"
+
+# 	def get_context_data(self, **kwargs):
+# 	    context = super(MonitorZabbixHostrsync, self).get_context_data(**kwargs)
+# 	    context['groups'] = self.getzabbixgroup()
+# 	    context['servers'] = Server.objects.all()
+# 	    context['ztree'] = json.dumps(product.Ztree().get())
+# 	    return context
+
+# 	def getzabbixgroup(self):
+# 		s = ZabbixServerProxy(settings.ZABBIX_URL)
+# 		s.user.login(user=settings.ZABBIX_USER,password=settings.ZABBIX_PASS)
+# 		groupdict=s.hostgroup.get(output=["name"])
+# 		return groupdict
+
+# 	def get(self,request,*args,**kwargs):
+# 		return super(MonitorZabbixHostrsync,self).get(request,*args,**kwargs)	
+

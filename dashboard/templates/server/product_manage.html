@@ -1,30 +1,164 @@
 {% extends "public/layout.html" %}
+
+{% block css %}
+    <link href="/static/zTree_v3-master/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" type="text/css">
+    <style>
+    .ztree * {padding:0; margin:0; font-size:16px;}
+    #productinfo{width:100%;height: 100%;display: none}
+    #productinfo ul li{line-height: 45px;font-size: 16px;}
+    #productinfo ul li label{display: inline-block;width:100px;text-align: right;font-weight: bold;margin-right:25px;}
+    #productinfo ul li button{margin-left:125px;}
+    </style>
+{% endblock %}
+
 {% block body %}
-<table class="table table-striped">
-<caption><a href="{% url 'product_add' %}" type="button" class="btn btn-primary">添加</a></caption>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>业务线名称</th>
-                <th>上级业务线</th>
-                <th>业务线字母简称</th>
-                <th>运维负责人</th>
-                <th>开发负责人</th>
-                <th>操作</th>
-                </tr>
-        </thead>
-        <tbody>
-                {% for server in object_list %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ server.name }}</td>
-                        <td>{{ server.module_letter }}</td>
-                        <td>{{ server.p_product }}</td>
-                        <td>{{ server.op_interface }}</td>
-                        <td>{{ server.dev_interface }}</td>
-                       <td><button class="btn btn-info">编辑</button></td>   
-                    </tr>    
-                {% endfor %}    
-        </tbody>     
-    </table> 
+    <div class="col-xs-3">
+        <a type="button" class="btn btn-primary" href="{% url 'product_add' %}">添加</a>
+        <div id="ztree" class="ztree"></div>
+    </div>
+    <div class="col-xs-9">
+        <div id="productinfo">
+            <ul class="list-unstyled">
+                <li><label>业务线名称: </label><span id="info_service_name"></span></li>
+                <li><label>上级业务线: </label><span id="info_pid"></span></li>
+                <li><label>业务线简称: </label><span id="info_module_letter"></span></li>
+                <li><label>业务负责人: </label><span id="info_dev_interface"></span></li>
+                <li><label>运维负责人: </label><span id="info_op_interface"></span></li>
+                <li>
+                    <button type="button" class="btn btn-primary" id="info_modify_btn">修改</button>
+                </li>
+            </ul>
+        </div>
+
+              <div id="modify" style="display:none">
+                    <form class="form-horizontal" role="form" parsley-validate id="basicvalidations" method="post">
+                        <div class="form-group">
+                            <label for="name" class="col-sm-2 control-label">分类名 *</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" name="service_name" autocomplete="off" id="input_service_name" parsley-trigger="change" parsley-required="true" parsley-minlength="2" parsley-validation-minlength="1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="name" class="col-sm-2 control-label">上级分类 *</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" readonly autocomplete="off" id="input_pid" parsley-trigger="change" parsley-required="true" parsley-minlength="2" parsley-validation-minlength="1">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="name" class="col-sm-2 control-label">字母简称 *</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" name="module_letter" autocomplete="off" id="input_module_letter" parsley-trigger="change" parsley-required="true" parsley-minlength="2" parsley-validation-minlength="1">
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <label for="name" class="col-sm-2 control-label">业务负责人 *</label>
+                            <div class="col-sm-8">
+                                <select data-placeholder="" multiple="选择联系人" tabindex="3" name="dev_interface" id="input_dev_interface" class="chosen-select form-control chosen-transparent">
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input_op_interface" class="col-sm-2 control-label">运维负责人 *</label>
+                            <div class="col-sm-8">
+                                <select data-placeholder="" multiple="选择联系人" tabindex="3" name="op_interface" id="input_op_interface" class="chosen-select form-control chosen-transparent">
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group form-footer">
+                            <div class="col-sm-offset-4 col-sm-8">
+                                <button type="submit" id="submit_modify" class="btn btn-primary">提交</button>
+                                <button id="return_info" class="btn btn-default">返回</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="row">
+                <ul class="list-inline" id="hostlist">
+                </ul>
+            </div>
+        </div>
+        <div class="clear"></div>        
+    </div>
+
+
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript" src="/static/zTree_v3-master/js/jquery.ztree.core.js"></script>
+
+
+    <script>
+        var product_id;                                 // 当前点击的业务线id
+        var productinfo_obj = $("#productinfo");        // 展示product的div
+        // 展示product的字段
+        var info_service_name_obj = $("#info_service_name");
+        var info_pid_obj = $("#info_pid");
+        var info_module_letter_obj = $("#info_module_letter");
+        var info_dev_interface_obj = $("#info_dev_interface");
+        var info_op_interface_obj = $("#info_op_interface");
+         var info_modify_btn = $("#info_modify_btn");
+
+         var modify_div = $("#modify");
+
+        function show_product_info(){
+            productinfo_obj.hide()
+            modify_div.hide();
+            $.get("/server/product/manage/get",{"id": product_id}, function(res){
+                if(res.status != 0){
+                    swal("错误", res.errmsg, "error")
+                }else{
+                    info_service_name_obj.html(res.data.name);
+                    info_pid_obj.html(res.data.p_product_id);
+                    info_module_letter_obj.html(res.data.module_letter);
+                    info_dev_interface_obj.html(res.data.dev_interface);
+                    info_op_interface_obj.html(res.data.op_interface);
+                    productinfo_obj.fadeIn("fast")
+                }
+            })
+        }
+
+
+        function md_product_info(){
+          info_modify_btn.click(function(event) {
+              productinfo_obj.hide();
+              modify_div.show();
+          });
+        }
+
+        function zTreeOnClick(event, treeId, treeNode) {
+            //console.log(treeNode.tId + ", " + treeNode.name);
+            product_id = treeNode.id;
+            show_product_info();
+            md_product_info();
+        }
+    
+    
+        var zTreeObj;
+       // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
+       var setting = {
+            callback: {
+                onClick: zTreeOnClick
+            },
+            view: {
+                fontCss : {fontSize:"16px"}
+            }
+       };
+       // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
+
+       var zNodes = {{ znodes|safe }};
+
+       $(function(){
+           zTreeObj = $.fn.zTree.init($("#ztree"), setting, zNodes);
+
+       })
+
+
+
+    </script>
 {% endblock %}

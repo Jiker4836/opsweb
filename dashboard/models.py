@@ -17,38 +17,6 @@ class Idc(models.Model):
 			("view_idc","查看idc"),
 			)
 
-class Server(models.Model):
-    supplier        = models.IntegerField(null=True)
-    manufacturers   = models.CharField(max_length=50, null=True)
-    manufacture_date= models.DateField(null=True)
-    server_type     = models.CharField(max_length=20, null=True)
-    sn              = models.CharField(max_length=60, db_index=True, null=True)
-    idc             = models.ForeignKey(Idc, null=True)
-    os              = models.CharField(max_length=50, null=True)
-    hostname        = models.CharField(max_length=50, db_index=True, null=True)
-    inner_ip        = models.CharField(max_length=32, null=True, unique=True)
-    mac_address     = models.CharField(max_length=50, null=True)
-    ip_info         = models.CharField(max_length=255, null=True)
-    server_cpu      = models.CharField(max_length=250, null=True)
-    server_disk     = models.CharField(max_length=100, null=True)
-    server_mem      = models.CharField(max_length=100, null=True)
-    status          = models.CharField(max_length=100,db_index=True, null=True)
-    remark          = models.TextField(null=True)
-    #service_id      = models.IntegerField(db_index=True, null=True)
-    #server_purpose  = models.ForeignKey(Product,null=True)
-    check_update_time = models.DateTimeField(auto_now=True,null=True)
-    vm_status       = models.IntegerField(db_index=True, null=True)
-    uuid            = models.CharField(max_length=100, db_index=True,null=True)
-
-
-    def __str__(self):
-        return "{} {}".format(self.hostname, self.inner_ip)
-
-    class Meta:
-        db_table = "server"
-        permissions = (
-            ("view_server", "访问服务器信息"),
-        )
 
 class Department(models.Model):
 	name=models.CharField(max_length=11,null=True)
@@ -76,7 +44,7 @@ class Status(models.Model):
 class Product(models.Model):
     name=models.CharField("业务线名称",max_length=32)
     p_product=models.ForeignKey("self",null=True,verbose_name='上级业务线')
-    module_letter=models.CharField("业务线字母简称",max_length=10)
+    module_letter=models.CharField("业务线字母简称",max_length=32)
     op_interface=models.CharField("运维负责人：username1,username2",max_length=255)
     dev_interface=models.CharField("开发负责人：username1,username2",max_length=255)
 
@@ -88,3 +56,48 @@ class Product(models.Model):
         permissions=(
             ("view_product","管理业务线"),
             )
+
+class Server(models.Model):
+    supplier        = models.IntegerField(null=True)
+    manufacturers   = models.CharField(max_length=50, null=True)
+    manufacture_date= models.DateField(null=True)
+    server_type     = models.CharField(max_length=20, null=True)
+    sn              = models.CharField(max_length=60, db_index=True, null=True)
+    idc             = models.ForeignKey(Idc, null=True)
+    os              = models.CharField(max_length=50, null=True)
+    hostname        = models.CharField(max_length=50, db_index=True, null=True)
+    inner_ip        = models.CharField(max_length=32, null=True, unique=True)
+    mac_address     = models.CharField(max_length=50, null=True)
+    ip_info         = models.CharField(max_length=255, null=True)
+    server_cpu      = models.CharField(max_length=250, null=True)
+    server_disk     = models.CharField(max_length=100, null=True)
+    server_mem      = models.CharField(max_length=100, null=True)
+    status          = models.CharField(max_length=100,db_index=True, null=True)
+    remark          = models.TextField(null=True)
+    service_id      = models.IntegerField(db_index=True, null=True)
+    server_purpose  = models.ForeignKey(Product,null=True)
+    check_update_time = models.DateTimeField(auto_now=True,null=True)
+    vm_status       = models.IntegerField(db_index=True, null=True)
+    uuid            = models.CharField(max_length=100, db_index=True,null=True)
+
+
+    def __str__(self):
+        return "{} {}".format(self.hostname, self.inner_ip)
+
+    class Meta:
+        db_table = "server"
+        permissions = (
+            ("view_server", "访问服务器信息"),
+        )        
+
+class ZabbixHost(models.Model):
+    server=models.OneToOneField(Server,null=True)
+    hostid=models.IntegerField(db_index=True,null=True)
+    host=models.CharField(max_length=50,db_index=True,null=True)
+    ip=models.CharField(max_length=50,db_index=True,null=True)
+    updatetime=models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return "{} {}".format(self.hostid,self.host)
+
+    class Meta:
+        db_table="resource_zabbix_cache"
